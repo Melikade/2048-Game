@@ -136,21 +136,25 @@ public class Board implements Initializable{
             }
 
             // merge
-            for (int i = 3; i > -1; i--) {
+            for (int i = 3; i > 0; i--) {
                 if (columnNodes[i] != null) {
                     if (columnNodes[i].value == columnNodes[i-1].value) {
-                        columnNodes[i-1].value *= 2; // Merge nodes
-                        columnNodes[i].value = 0; // Set merged node to 0
+                        columnNodes[i-1].value *= 2;
+                        columnNodes[i] = null;
                         score.setText(Integer.toString(columnNodes[i-1].value));
-                    }
-                    else if (columnNodes[i-1] == null){
-                        columnNodes[i-1]=columnNodes[i];
-                        columnNodes[i-1].row=
                     }
                 }
             }
+            //moving up all the tiles in the column
+            for (int i = 3; i > 0; i--) {
+                if (columnNodes[i] != null && columnNodes[i - 1] == null) {
+                    columnNodes[i - 1] = columnNodes[i];
+                    columnNodes[i - 1].row = i - 1;
 
-            // Update the linked list and remove nodes with value 0
+                }
+            }
+
+            // Update the linked list to remove the elements with null value
             Node prev = null;
             for (int i = 0; i < 4; i++) {
                 if (columnNodes[i] != null && columnNodes[i].value == 0) {
