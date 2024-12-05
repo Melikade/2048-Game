@@ -12,6 +12,10 @@ import java.util.ResourceBundle;
 public class Board implements Initializable{
     private Node first ;
     private Label[][] labels = new Label[4][4];
+    private Node[][] stackNode = new Node[100][16];
+    private static int countUndo = 5;
+    private static int top = -1;
+    //private Node[][] undoBoardForRedo
     @FXML
     public Label score;
 
@@ -25,14 +29,13 @@ public class Board implements Initializable{
     public GridPane board;
 
 
-    public Board() {
-    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             initializeLabels();
-            addNewTile();
-            addNewTile();
+            addNewTale();
+            addNewTale();
+            saveState();
             board.setOnKeyPressed(event -> {
                 switch (event.getCode()) {
                     case UP:
@@ -60,14 +63,24 @@ public class Board implements Initializable{
                 labels[i][j] = new Label("");
                 //chera kar nemikone
                 labels[i][j].setStyle("-fx-alignment: center;");
-                labels[i][j].setStyle("-fx-text-fill: blue;");
-                labels[i][j].setStyle("-fx-font-size: 12px;");
+                labels[i][j].setStyle("-fx-text-fill: #ffa200;");
+                labels[i][j].setStyle("-fx-font-size: 15px;");
                 board.add(labels[i][j], j, i);
             }
         }
     }
 
-    public void addNewTile() {
+    //saving the boards state
+    public void saveState (){
+        Node p = first;
+        top++;
+        for (int i = 0; p != null; i++) {
+            stackNode[top][i] = p;
+            p = p.next;
+        }
+    }
+
+    public void addNewTale() {
         Random rand = new Random();
         int value = rand.nextInt(10) < 7 ? 2 : 4; // 70% chance of 2, 30% chance of 4
         int row, col;
@@ -118,9 +131,19 @@ public class Board implements Initializable{
         }
     }
 
+    // has the player made a move in which the board the changes
+    public boolean successfulMove() {
+        Node p = first;
+        for (int i = 0; i < stackNode[top].length && p != null; i++) {
+            if (p != stackNode[top][i]){
+                return true;
+            }
+            p = p.next;
+        }
+        return false;
+    }
 
-
-    // Implement the move functions, merge logic, and other necessary methods
+    // moving up the tiles
     public void moveUp() {
         //putting each column inside an array
         for (int col = 0; col < 4; col++) {
@@ -138,38 +161,36 @@ public class Board implements Initializable{
             // merge
             for (int i = 3; i > 0; i--) {
                 if (columnNodes[i] != null) {
-                    if (columnNodes[i].value == columnNodes[i-1].value) {
+                    if (columnNodes[i-1] != null && columnNodes[i].value == columnNodes[i-1].value) {
                         columnNodes[i-1].value *= 2;
-                        columnNodes[i] = null;
-                        score.setText(Integer.toString(columnNodes[i-1].value));
+                        columnNodes[i].value = 0;
+                        score.setText(Integer.toString(columnNodes[i-1].value + Integer.parseInt(score.getText())));
                     }
                 }
             }
             //moving up all the tiles in the column
             for (int i = 3; i > 0; i--) {
-                if (columnNodes[i] != null && columnNodes[i - 1] == null) {
+                if (columnNodes[i] != null && (columnNodes[i - 1] == null || columnNodes[i-1].value == 0)) {
                     columnNodes[i - 1] = columnNodes[i];
                     columnNodes[i - 1].row = i - 1;
-
-                }
-            }
-
-            // Update the linked list to remove the elements with null value
-            Node prev = null;
-            for (int i = 0; i < 4; i++) {
-                if (columnNodes[i] != null && columnNodes[i].value == 0) {
-                    // Remove the node from the linked list
-                    if (prev != null) {
-                        prev.next = columnNodes[i].next;
-                    } else {
-                        first = columnNodes[i].next;
-                    }
-                } else {
-                    prev = columnNodes[i];
+                    columnNodes[i].value = 0;
                 }
             }
         }
-        addNewTile();
+        // Update the linked list to remove the elements with 0 value after merging and moving upp the tiles
+        Node q = first;
+        if(q.value == 0){
+            q = first.next;
+            first = first.next;
+        }
+        while (q.next != null){
+            while (q.next.value == 0){
+                q.next = q.next.next;
+            }
+            q = q.next;
+        }
+
+        addNewTale();
         setBoard();
     }
 
