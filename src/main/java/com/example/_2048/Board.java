@@ -189,7 +189,7 @@ public class Board implements Initializable{
             Node p = first;
             while (p != null) {
                 if (p.col == col) {
-                    columnNodes[p.row] = new Node(p.value, p.row, p.col); // Creating a new node (deep copy)
+                    columnNodes[p.row] = new Node(p.value, p.row, p.col);
                 }
                 p = p.next;
             }
@@ -273,7 +273,7 @@ public class Board implements Initializable{
             Node p = first;
             while (p != null) {
                 if (p.col == col) {
-                    columnNodes[p.row] = new Node(p.value, p.row, p.col); // Creating a new node (deep copy)
+                    columnNodes[p.row] = new Node(p.value, p.row, p.col);
                 }
                 p = p.next;
             }
@@ -348,6 +348,89 @@ public class Board implements Initializable{
     }
 
 
+    public void moveLeft() {
+        // Put each row inside an array
+        for (int row = 0; row < 4; row++) {
+            Node[] rowNodes = new Node[4];
+
+            // Extract nodes in the current row
+            Node p = first;
+            while (p != null) {
+                if (p.row == row) {
+                    rowNodes[p.col] = new Node(p.value, p.row, p.col);
+                }
+                p = p.next;
+            }
+
+            // Shift nodes to fill empty spaces
+            for (int i = 1; i < 4; i++) {
+                if (rowNodes[i] != null) {
+                    int j = i;
+                    while (j > 0 && rowNodes[j - 1] == null) {
+                        rowNodes[j - 1] = rowNodes[j];
+                        rowNodes[j] = null;
+                        rowNodes[j - 1].col = j - 1;
+                        j--;
+                    }
+                }
+            }
+
+            // Merge nodes
+            for (int i = 1; i < 4; i++) {
+                if (rowNodes[i] != null) {
+                    if (rowNodes[i - 1] != null && rowNodes[i - 1].value == rowNodes[i].value) {
+                        rowNodes[i - 1].value *= 2;
+                        rowNodes[i] = null;
+                        score.setText(Integer.toString(Integer.parseInt(score.getText()) + rowNodes[i - 1].value));
+                    }
+                }
+            }
+
+            // Shift nodes to fill empty spaces again after merging
+            for (int i = 1; i < 4; i++) {
+                if (rowNodes[i] != null) {
+                    int j = i;
+                    while (j > 0 && rowNodes[j - 1] == null) {
+                        rowNodes[j - 1] = rowNodes[j];
+                        rowNodes[j] = null;
+                        rowNodes[j - 1].col = j - 1;
+                        j--;
+                    }
+                }
+            }
+
+            // Update the linked list to reflect the changes in rowNodes
+            Node dummy = new Node(0, -1, -1);
+            dummy.next = first;
+            Node prev = dummy;
+            Node current = first;
+            int k = 0; // Start from the left
+            while (current != null) {
+                if (current.row == row) {
+                    if (k < rowNodes.length && rowNodes[k] == null) {
+                        prev.next = current.next;
+                    } else if (k < rowNodes.length) {
+                        current.value = rowNodes[k].value;
+                        current.row = rowNodes[k].row;
+                        current.col = rowNodes[k].col;
+                        prev = current;
+                    }
+                    k++;
+                } else {
+                    prev = current;
+                }
+                current = current.next;
+            }
+            first = dummy.next;
+        }
+
+        // Check if the move made any changes to the board
+        if (successfulMove()) {
+            addNewTale();
+            setBoard();
+            saveState();
+        }
+    }
 
 
     public void moveRight() {
@@ -359,7 +442,7 @@ public class Board implements Initializable{
             Node p = first;
             while (p != null) {
                 if (p.row == row) {
-                    rowNodes[p.col] = new Node(p.value, p.row, p.col); // Creating a new node (deep copy)
+                    rowNodes[p.col] = new Node(p.value, p.row, p.col);
                 }
                 p = p.next;
             }
