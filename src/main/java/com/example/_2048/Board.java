@@ -75,11 +75,11 @@ public class Board implements Initializable{
         countUndo = 5;
         countRedo = 5;
         top = -1;
-        clearLabels();
         setBoard();
         addNewTale();
         addNewTale();
         setBoard();
+        saveState();
     }
 
     //saving the boards state
@@ -233,23 +233,109 @@ public class Board implements Initializable{
             }
 
             //change the linked list
-            Node dummy=new Node(0,-1,-1);
-            dummy.next= first;
-            Node q = dummy;
+            Node dummy = new Node(0, -1, -1);
+            dummy.next = first;
+            Node prev = dummy;
+            Node current = first;
             int k = 0;
-            while (q.next != null) {
-                if (q.next.col == col) {
-                    if (columnNodes[k] == null && k < columnNodes.length){
-                        q.next = q.next.next;
-                    }
-                    else if (k < columnNodes.length){
-                        q.next.value = columnNodes[k].value;
-                        q.next.row = columnNodes[k].row;
-                        q.next.col = columnNodes[k].col;
+            while (current != null) {
+                if (current.col == col) {
+                    if (k < columnNodes.length && columnNodes[k] == null) {
+                        prev.next = current.next;
+                    } else if (k < columnNodes.length) {
+                        current.value = columnNodes[k].value;
+                        current.row = columnNodes[k].row;
+                        current.col = columnNodes[k].col;
+                        prev = current;
                     }
                     k++;
+                } else {
+                    prev = current;
                 }
-                q = q.next;
+                current = current.next;
+            }
+            first = dummy.next;
+        }
+        // Check if the move made any changes to the board
+        if (successfulMove()) {
+            addNewTale();
+            setBoard();
+            saveState();
+        }
+    }
+
+    public void moveDown() {
+        // Put each column inside an array
+        for (int col = 0; col < 4; col++) {
+            Node[] columnNodes = new Node[4];
+
+            // Extract nodes in the current column
+            Node p = first;
+            while (p != null) {
+                if (p.col == col) {
+                    columnNodes[p.row] = new Node(p.value, p.row, p.col); // Creating a new node (deep copy)
+                }
+                p = p.next;
+            }
+
+            // Shift nodes to fill empty spaces
+            for (int i = 2; i >= 0; i--) {
+                if (columnNodes[i] != null) {
+                    int j = i;
+                    while (j < 3 && columnNodes[j + 1] == null) {
+                        columnNodes[j + 1] = columnNodes[j];
+                        columnNodes[j] = null;
+                        columnNodes[j + 1].row = j + 1;
+                        j++;
+                    }
+                }
+            }
+
+            // Merge nodes
+            for (int i = 2; i >= 0; i--) {
+                if (columnNodes[i] != null) {
+                    if (columnNodes[i + 1] != null && columnNodes[i + 1].value == columnNodes[i].value) {
+                        columnNodes[i + 1].value *= 2;
+                        columnNodes[i] = null;
+                        score.setText(Integer.toString(Integer.parseInt(score.getText()) + columnNodes[i + 1].value));
+                    }
+                }
+            }
+
+            // Shift nodes to fill empty spaces again after merging
+            for (int i = 2; i >= 0; i--) {
+                if (columnNodes[i] != null) {
+                    int j = i;
+                    while (j < 3 && columnNodes[j + 1] == null) {
+                        columnNodes[j + 1] = columnNodes[j];
+                        columnNodes[j] = null;
+                        columnNodes[j + 1].row = j + 1;
+                        j++;
+                    }
+                }
+            }
+
+            // Update the linked list to reflect the changes in columnNodes
+            Node dummy = new Node(0, -1, -1);
+            dummy.next = first;
+            Node prev = dummy;
+            Node current = first;
+            int k = 3; // Start from the bottom
+            while (current != null) {
+                if (current.col == col) {
+                    if (k >= 0 && columnNodes[k] == null) {
+                        prev.next = current.next;
+                    } else if (k >= 0) {
+                        current.value = columnNodes[k].value;
+                        current.row = columnNodes[k].row;
+                        current.col = columnNodes[k].col;
+                        prev = current;
+                    }
+                    k--;
+                } else {
+                    prev = current;
+                }
+                current = current.next;
             }
             first = dummy.next;
         }
@@ -263,17 +349,8 @@ public class Board implements Initializable{
 
 
 
-    public void moveDown() {
-        // Implementation of move down functionality
-    }
 
-    public void moveLeft() {
-        // Implementation of move left functionality
-    }
 
-    public void moveRight() {
-        // Implementation of move right functionality
-    }
 
     public boolean hasWon() {
         // Implementation of winning condition
