@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="da4a93c3-4f1c-463b-9b75-b849464983c9" name="Changes" comment="saving the state">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/_2048/StackNode.java" afterDir="false" />
+    <list default="true" id="da4a93c3-4f1c-463b-9b75-b849464983c9" name="Changes" comment="corrected move up">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/_2048/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/_2048/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/_2048/board.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/example/_2048/board.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +94,7 @@
       <workItem from="1732877861687" duration="1350000" />
       <workItem from="1733242707714" duration="15444000" />
       <workItem from="1733340143152" duration="3429000" />
-      <workItem from="1733386967345" duration="10690000" />
+      <workItem from="1733386967345" duration="20313000" />
     </task>
     <task id="LOCAL-00001" summary="board design">
       <created>1733248436132</created>
@@ -124,7 +124,14 @@
       <option name="project" value="LOCAL" />
       <updated>1733394614894</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="corrected move up">
+      <created>1733398138156</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1733398138156</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -135,6 +142,7 @@
     <MESSAGE value="adding new tiles" />
     <MESSAGE value="move up" />
     <MESSAGE value="saving the state" />
-    <option name="LAST_COMMIT_MESSAGE" value="saving the state" />
+    <MESSAGE value="corrected move up" />
+    <option name="LAST_COMMIT_MESSAGE" value="corrected move up" />
   </component>
 </project>
