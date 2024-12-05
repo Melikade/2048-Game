@@ -8,15 +8,18 @@ import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 
 public class Board implements Initializable{
     private Node first ;
     private Label[][] labels = new Label[4][4];
     private static Node[][] stackNode = new Node[100][16];
+    private static Node[][] stackNodeRedo = new Node[100][16];
     private static int countUndo = 5;
     private static int countRedo = 5;
     private static int top = -1;
-    //private Node[][] undoBoardForRedo
     @FXML
     public Label score;
     @FXML
@@ -67,6 +70,14 @@ public class Board implements Initializable{
             }
         }
     }
+    public void showMessage(String message) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     //restarting the game
     @FXML
     public void restart() {
@@ -75,6 +86,7 @@ public class Board implements Initializable{
         countUndo = 5;
         countRedo = 5;
         top = -1;
+        score.setText("0");
         setBoard();
         addNewTale();
         addNewTale();
@@ -261,6 +273,9 @@ public class Board implements Initializable{
             addNewTale();
             setBoard();
             saveState();
+            hasWon();
+            isGameOver();
+
         }
     }
 
@@ -344,6 +359,9 @@ public class Board implements Initializable{
             addNewTale();
             setBoard();
             saveState();
+            hasWon();
+            isGameOver();
+
         }
     }
 
@@ -423,12 +441,14 @@ public class Board implements Initializable{
             }
             first = dummy.next;
         }
-
         // Check if the move made any changes to the board
         if (successfulMove()) {
             addNewTale();
             setBoard();
             saveState();
+            hasWon();
+            isGameOver();
+
         }
     }
 
@@ -508,30 +528,40 @@ public class Board implements Initializable{
             }
             first = dummy.next;
         }
-
         // Check if the move made any changes to the board
         if (successfulMove()) {
             addNewTale();
             setBoard();
             saveState();
+            hasWon();
+            isGameOver();
+
         }
     }
 
 
-    public boolean hasWon() {
-        // Implementation of winning condition
-        return false;
+    public void hasWon() {
+        if(Integer.parseInt(score.getText()) == 2048){
+            showMessage("YOU HAVE WON!");
+        }
     }
 
-    public boolean isGameOver() {
-        // Implementation of game over condition
-        return false;
+    public void isGameOver() {
+        boolean sw = true;
+        for (int i = 0; i <= top; i++) {
+            if(stackNode[top][i] == null)
+                sw = false;
+        }
+        if(sw){
+            showMessage("GAME OVER!");
+        }
     }
-
+    @FXML
     public void undo() {
-        // Implementation of undo functionality
+
     }
 
+    @FXML
     public void redo() {
         // Implementation of redo functionality
     }

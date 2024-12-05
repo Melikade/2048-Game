@@ -29,8 +29,8 @@
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <Button fx:id="undo" layoutX="225.0" layoutY="526.0" mnemonicParsing="false" text="Button" />
-      <Button fx:id="redo" layoutX="366.0" layoutY="527.0" mnemonicParsing="false" text="Button" />
+      <Button fx:id="undo" layoutX="225.0" layoutY="526.0" mnemonicParsing="false" onAction="#undo" text="undo" />
+      <Button fx:id="redo" layoutX="366.0" layoutY="527.0" mnemonicParsing="false" onAction="#redo" text="Button" />
       <Button fx:id="restart" layoutX="552.0" layoutY="36.0" mnemonicParsing="false" onAction="#restart" text="Button" />
    </children>
 </AnchorPane>
