@@ -65,7 +65,7 @@ public class Board implements Initializable{
                 labels[i][j].setStyle("-fx-alignment: center;");
                 labels[i][j].setStyle("-fx-text-fill: #ffa200;");
                 labels[i][j].setStyle("-fx-font-size: 15px;");
-                board.add(labels[i][j], j, i);
+                board.add(labels[i][j], j,i);
             }
         }
     }
@@ -75,7 +75,8 @@ public class Board implements Initializable{
         Node p = first;
         top++;
         for (int i = 0; p != null; i++) {
-            stackNode[top][i] = p;
+            Node q = new Node(p.value,p.row,p.col);
+            stackNode[top][i] = q;
             p = p.next;
         }
     }
@@ -135,7 +136,13 @@ public class Board implements Initializable{
     public boolean successfulMove() {
         Node p = first;
         for (int i = 0; i < stackNode[top].length && p != null; i++) {
-            if (p != stackNode[top][i]){
+            if (stackNode[top][i] == null && p != null) {
+                return true;
+            }
+            if (stackNode[top][i] != null && p == null) {
+                return true;
+            }
+            if (stackNode[top][i] != null && p != null && (stackNode[top][i].value != p.value ||  stackNode[top][i].row != p.row || stackNode[top][i].col != p.col)){
                 return true;
             }
             p = p.next;
@@ -143,9 +150,13 @@ public class Board implements Initializable{
         return false;
     }
 
+
     // moving up the tiles
     public void moveUp() {
-        //putting each column inside an array
+        // Save the current state to compare later
+        saveState();
+
+        // Put each column inside an array
         for (int col = 0; col < 4; col++) {
             Node[] columnNodes = new Node[4];
 
@@ -158,41 +169,111 @@ public class Board implements Initializable{
                 p = p.next;
             }
 
-            // merge
-            for (int i = 3; i > 0; i--) {
+            // Merge nodes
+            for (int i = 1; i < 4; i++) {
                 if (columnNodes[i] != null) {
-                    if (columnNodes[i-1] != null && columnNodes[i].value == columnNodes[i-1].value) {
-                        columnNodes[i-1].value *= 2;
-                        columnNodes[i].value = 0;
-                        score.setText(Integer.toString(columnNodes[i-1].value + Integer.parseInt(score.getText())));
+                    if (columnNodes[i - 1] != null && columnNodes[i - 1].value == columnNodes[i].value) {
+                        columnNodes[i - 1].value *= 2;
+                        columnNodes[i] = null;
+                        score.setText(Integer.toString(Integer.parseInt(score.getText()) + columnNodes[i - 1].value));
                     }
                 }
             }
-            //moving up all the tiles in the column
-            for (int i = 3; i > 0; i--) {
-                if (columnNodes[i] != null && (columnNodes[i - 1] == null || columnNodes[i-1].value == 0)) {
-                    columnNodes[i - 1] = columnNodes[i];
-                    columnNodes[i - 1].row = i - 1;
-                    columnNodes[i].value = 0;
+
+            // Shift nodes to fill empty spaces
+            for (int i = 1; i < 4; i++) {
+                if (columnNodes[i] != null) {
+                    int j = i;
+                    while (j > 0 && columnNodes[j - 1] == null) {
+                        columnNodes[j - 1] = columnNodes[j];
+                        columnNodes[j] = null;
+                        columnNodes[j - 1].row = j - 1;
+                        j--;
+                    }
                 }
             }
         }
-        // Update the linked list to remove the elements with 0 value after merging and moving upp the tiles
-        Node q = first;
-        if(q.value == 0){
-            q = first.next;
-            first = first.next;
-        }
-        while (q.next != null){
-            while (q.next.value == 0){
-                q.next = q.next.next;
+
+        // Update the linked list to remove nodes with value 0
+        Node dummy = new Node(0, -1, -1);
+        dummy.next = first;
+        Node prev = dummy;
+        Node current = first;
+
+        while (current != null) {
+            if (current.value == 0) {
+                prev.next = current.next;
+            } else {
+                prev = current;
             }
-            q = q.next;
+            current = current.next;
         }
 
-        addNewTale();
+        first = dummy.next;
+
+        // Check if the move made any changes to the board
+        if (successfulMove()) {
+            addNewTale();
+        }
         setBoard();
     }
+
+
+
+//    public void moveUp() {
+//        //putting each column inside an array
+//        for (int col = 0; col < 4; col++) {
+//            Node[] columnNodes = new Node[4];
+//
+//            // Extract nodes in the current column
+//            Node p = first;
+//            while (p != null) {
+//                if (p.col == col) {
+//                    columnNodes[p.row] = p;
+//                }
+//                p = p.next;
+//            }
+//
+//            // merge
+//            for (int i = 3; i > 0; i--) {
+//                if (columnNodes[i] != null) {
+//                    if (columnNodes[i-1] != null && columnNodes[i].value == columnNodes[i-1].value) {
+//                        columnNodes[i-1].value *= 2;
+//                        columnNodes[i].value = 0;
+//                        score.setText(Integer.toString(columnNodes[i-1].value + Integer.parseInt(score.getText())));
+//                    }
+//                }
+//            }
+//            //moving up all the tiles in the column
+//            for (int i = 3; i > 0; i--) {
+//                if (columnNodes[i] != null && (columnNodes[i - 1] == null || columnNodes[i-1].value == 0)) {
+//                    columnNodes[i - 1] = columnNodes[i];
+//                    columnNodes[i - 1].row = i - 1;
+//                    columnNodes[i].value = 0;
+//                }
+//            }
+//        }
+//        // Update the linked list to remove the elements with 0 value after merging and moving upp the tiles
+//        Node q = first;
+//        Node prev = null;
+//
+//        if (first != null && first.value == 0) {
+//            first = first.next;
+//        }
+//        while (q != null) {
+//            while (q.next != null && q.next.value == 0) {
+//                q.next = q.next.next; // Skip the node with value 0
+//            }
+//            prev = q;
+//            q = q.next;
+//        }
+//
+//        //check if the move made any changes to the board
+//        if(successfulMove()) {
+//            addNewTale();
+//        }
+//        setBoard();
+//    }
 
 
     public void moveDown() {
