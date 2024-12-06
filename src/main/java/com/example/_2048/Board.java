@@ -17,6 +17,8 @@ public class Board implements Initializable{
     private Label[][] labels = new Label[4][4];
     private static Node[][] stackNode = new Node[100][16];
     private static Node[][] stackNodeRedo = new Node[100][16];
+    private int[] scoreUndo = new int[100];
+    private int[] scoreRedo = new int[100];
     private static int countUndo = 5;
     private static int countRedo = 5;
     private static int top = -1;
@@ -111,6 +113,7 @@ public class Board implements Initializable{
                 stackNode[top][i] = new Node(0, -1, -1); // Use a default value or consider a different approach
             }
         }
+        scoreUndo[top]=Integer.parseInt(score.getText());
 //        for (int i = 0; i <= top; i++) {
 //            for (int j = 0; j < stackNode[i].length; j++) {
 //                if (stackNode[i][j] != null) {
@@ -126,20 +129,22 @@ public class Board implements Initializable{
 
     @FXML
     public void undo() {
-        if (top > 0 && countUndo>0) {
+        if (top >= 0 && countUndo>0) {
             // Save the current state to redo stack
             topRedo++;
             for (int i = 0; i < stackNode[top].length; i++) {
-                stackNodeRedo[topRedo][i] = stackNode[top][i];
+                Node q = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
+                stackNodeRedo[topRedo][i] = q;
+                scoreRedo[topRedo] = scoreUndo[top];
                 stackNode[top][i].value = 0;
                 stackNode[top][i].row = -1;
                 stackNode[top][i].col = -1;
             }
             top--;
-
+            score.setText(Integer.toString(scoreUndo[top]));
             // Restore the state from undo stack
             first = null;
-            for (int i = 0; i < stackNode[top].length && stackNode[top][i] != null; i++) {
+            for (int i = 0; i < stackNode[top].length && stackNode[top][i].value != 0; i++) {
                 Node newNode = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
                 stackNode[top][i].value = 0;
                 stackNode[top][i].row = -1;
@@ -168,6 +173,7 @@ public class Board implements Initializable{
     @FXML
     public void redo() {
         if (topRedo >= 0 && countRedo>0) {
+            score.setText(Integer.toString(scoreRedo[topRedo]));
             // Restore the state from redo stack
             first = null;
             for (int i = 0; i < stackNodeRedo[topRedo].length && stackNodeRedo[topRedo][i].value != 0; i++) {

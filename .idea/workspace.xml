@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="da4a93c3-4f1c-463b-9b75-b849464983c9" name="Changes" comment="game won and over">
+    <list default="true" id="da4a93c3-4f1c-463b-9b75-b849464983c9" name="Changes" comment="undo and redo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/_2048/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/_2048/Board.java" afterDir="false" />
     </list>
@@ -93,7 +93,9 @@
       <workItem from="1732877861687" duration="1350000" />
       <workItem from="1733242707714" duration="15444000" />
       <workItem from="1733340143152" duration="3429000" />
-      <workItem from="1733386967345" duration="28980000" />
+      <workItem from="1733386967345" duration="29036000" />
+      <workItem from="1733467913758" duration="67000" />
+      <workItem from="1733512951249" duration="1548000" />
     </task>
     <task id="LOCAL-00001" summary="board design">
       <created>1733248436132</created>
@@ -165,7 +167,14 @@
       <option name="project" value="LOCAL" />
       <updated>1733421808653</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="undo and redo">
+      <created>1733427535428</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1733427535428</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -182,6 +191,7 @@
     <MESSAGE value="move right" />
     <MESSAGE value="move down" />
     <MESSAGE value="game won and over" />
-    <option name="LAST_COMMIT_MESSAGE" value="game won and over" />
+    <MESSAGE value="undo and redo" />
+    <option name="LAST_COMMIT_MESSAGE" value="undo and redo" />
   </component>
 </project>
