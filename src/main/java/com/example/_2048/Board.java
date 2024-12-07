@@ -643,6 +643,22 @@ public class Board implements Initializable{
                 return;
             }
         }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if(i-1>=0)
+                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i-1][j].getText()))
+                        return;
+                if(i+1<=3)
+                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i+1][j].getText()))
+                        return;
+                if(j-1>=0)
+                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i][j-1].getText()))
+                        return;
+                if(j+1<=3)
+                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i][j+1].getText()))
+                        return;
+            }
+        }
         if(sw){
             showMessage("GAME OVER!");
         }
