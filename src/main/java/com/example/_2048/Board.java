@@ -81,106 +81,6 @@ public class Board implements Initializable{
         alert.setContentText(message);
         alert.showAndWait();
     }
-
-    //restarting the game
-    @FXML
-    public void restart() {
-        first = null;
-        stackNode = null;
-        stackNodeRedo = null;
-        countUndo = 5;
-        countRedo = 5;
-        top = -1;
-        topRedo = -1;
-        for (int i = 0; i < 16; i++) {
-            if (stackNode[top][i] == null) {
-                stackNode[top][i] = new Node(0, -1, -1);
-            }
-        }
-        score.setText("0");
-        addNewTale();
-        addNewTale();
-        setBoard();
-        saveState();
-    }
-
-    //saving the boards state
-    public void saveState() {
-        Node p = first;
-        top++;
-        for (int i = 0; p != null; i++) {
-            Node q = new Node(p.value, p.row, p.col);
-            stackNode[top][i] = q;
-            p = p.next;
-        }
-
-        for (int i = 0; i < stackNode[top].length; i++) {
-            if (stackNode[top][i] == null) {
-                stackNode[top][i] = new Node(0, -1, -1);
-            }
-        }
-        scoreUndo[top]=Integer.parseInt(score.getText());
-    }
-
-    @FXML
-    public void undo() {
-        if (top >= 0 && countUndo>0) {
-            // Save the current state to redo stack
-            topRedo++;
-            for (int i = 0; i < stackNode[top].length; i++) {
-                Node q = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
-                stackNodeRedo[topRedo][i] = q;
-                scoreRedo[topRedo] = scoreUndo[top];
-                stackNode[top][i].value = 0;
-                stackNode[top][i].row = -1;
-                stackNode[top][i].col = -1;
-            }
-            top--;
-            restoreState(stackNode, top,scoreUndo);
-            countUndo--;
-            saveState();
-            setBoard();
-        }
-        else if(countUndo == 0){
-            showMessage("NO MORE UNDOS LEFT");
-        }
-    }
-    public void restoreState (Node[][] stackNode, int top, int[] scoreUndo){
-        score.setText(Integer.toString(scoreUndo[top]));
-        // Restore the state from undo stack
-        first = null;
-        for (int i = 0; i < stackNode[top].length && stackNode[top][i].value != 0; i++) {
-            Node newNode = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
-            stackNode[top][i].value = 0;
-            stackNode[top][i].row = -1;
-            stackNode[top][i].col = -1;
-            if (first == null) {
-                first = newNode;
-            } else {
-                Node p = first;
-                while (p.next != null) {
-                    p = p.next;
-                }
-                p.next = newNode;
-            }
-        }
-        top--;
-    }
-
-
-    @FXML
-    public void redo() {
-        if (topRedo >= 0 && countRedo>0) {
-            restoreState(stackNodeRedo, topRedo, scoreRedo);
-            countRedo--;
-            saveState();
-            setBoard();
-        }
-        else if(countRedo == 0){
-            showMessage("NO MORE REDOS LEFT");
-        }
-    }
-
     public void addNewTale() {
         Random rand = new Random();
         int value = rand.nextInt(10) < 7 ? 2 : 4; // 70% chance of 2, 30% chance of 4
@@ -229,6 +129,110 @@ public class Board implements Initializable{
             }
         }
     }
+
+
+    //restarting the game
+    @FXML
+    public void restart() {
+        first = null;
+        countUndo = 5;
+        countRedo = 5;
+        top = -1;
+        topRedo = -1;
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 16; j++) {
+                stackNode[i][j] = new Node(0, -1, -1);
+            }
+        }
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 16; j++) {
+                stackNodeRedo[i][j] = new Node(0, -1, -1);
+            }
+        }
+        score.setText("0");
+        addNewTale();
+        addNewTale();
+        setBoard();
+        saveState();
+    }
+
+    //saving the boards state
+    public void saveState() {
+        Node p = first;
+        top++;
+        for (int i = 0; p != null; i++) {
+            Node q = new Node(p.value, p.row, p.col);
+            stackNode[top][i] = q;
+            p = p.next;
+        }
+
+        for (int i = 0; i < stackNode[top].length; i++) {
+            if (stackNode[top][i] == null) {
+                stackNode[top][i] = new Node(0, -1, -1);
+            }
+        }
+        scoreUndo[top]=Integer.parseInt(score.getText());
+    }
+
+    @FXML
+    public void undo() {
+        if (top > 0 && countUndo>0) {
+            // Save the current state to redo stack
+            topRedo++;
+            for (int i = 0; i < stackNode[top].length; i++) {
+                Node q = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
+                stackNodeRedo[topRedo][i] = q;
+                scoreRedo[topRedo] = scoreUndo[top];
+                stackNode[top][i].value = 0;
+                stackNode[top][i].row = -1;
+                stackNode[top][i].col = -1;
+            }
+            top--;
+            restoreState(stackNode, top,scoreUndo);
+            countUndo--;
+            saveState();
+            setBoard();
+        }
+        else if(countUndo == 0){
+            showMessage("NO MORE UNDOS LEFT");
+        }
+    }
+    public void restoreState (Node[][] stackNode, int top, int[] scoreUndo){
+        score.setText(Integer.toString(scoreUndo[top]));
+        // Restore the state from undo stack
+        first = null;
+        for (int i = 0; i < stackNode[top].length && stackNode[top][i].value != 0; i++) {
+            Node newNode = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
+            stackNode[top][i].value = 0;
+            stackNode[top][i].row = -1;
+            stackNode[top][i].col = -1;
+            if (first == null) {
+                first = newNode;
+            } else {
+                Node p = first;
+                while (p.next != null) {
+                    p = p.next;
+                }
+                p.next = newNode;
+            }
+        }
+        top--;
+    }
+
+
+    @FXML
+    public void redo() {
+        if (topRedo > 0 && countRedo>0) {
+            restoreState(stackNodeRedo, topRedo, scoreRedo);
+            countRedo--;
+            saveState();
+            setBoard();
+        }
+        else if(countRedo == 0){
+            showMessage("NO MORE REDOS LEFT");
+        }
+    }
+
 
     // has the player made a move in which the board the changes
     public boolean successfulMove() {
@@ -591,9 +595,20 @@ public class Board implements Initializable{
                 return;
             }
         }
-        for (int i = 0; i < top; i++) {
-            for (int j = 0; j < 16; j++) {
-                if()
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if(i-1>=0)
+                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i-1][j].getText()))
+                        return;
+                if(i+1<=3)
+                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i+1][j].getText()))
+                        return;
+                if(j-1>=0)
+                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i][j-1].getText()))
+                        return;
+                if(j+1<=3)
+                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i][j+1].getText()))
+                        return;
             }
         }
         if(sw){
