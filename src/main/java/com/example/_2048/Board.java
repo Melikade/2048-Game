@@ -1,15 +1,19 @@
 package com.example._2048;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.fxml.Initializable;
 import java.net.URL;
+import java.text.FieldPosition;
 import java.util.Random;
 import java.util.ResourceBundle;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 
 public class Board implements Initializable{
@@ -66,9 +70,9 @@ public class Board implements Initializable{
             for (int j = 0; j < 4; j++) {
                 labels[i][j] = new Label("");
                 //chera kar nemikone
-                labels[i][j].setStyle("-fx-alignment: center;");
-                labels[i][j].setStyle("-fx-text-fill: #ffa200;");
-                labels[i][j].setStyle("-fx-font-size: 15px;");
+                labels[i][j].setFont(new Font("AppleGothic", 15));
+                labels[i][j].setTextFill(Color.rgb(124,44,7));
+                labels[i][j].alignmentProperty().set(Pos.CENTER);
                 board.add(labels[i][j], j,i);
             }
         }
@@ -81,6 +85,135 @@ public class Board implements Initializable{
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    //restarting the game
+    @FXML
+    public void restart() {
+        first = null;
+        countUndo = 5;
+        countRedo = 5;
+        top = -1;
+        topRedo = -1;
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 16; j++) {
+                stackNode[i][j] = new Node(0, -1, -1);
+            }
+        }
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 16; j++) {
+                stackNodeRedo[i][j] = new Node(0, -1, -1);
+            }
+        }
+        score.setText("0");
+        addNewTale();
+        addNewTale();
+        setBoard();
+        saveState();
+    }
+
+    //saving the boards state
+    public void saveState() {
+        Node p = first;
+        top++;
+        for (int i = 0; p != null; i++) {
+            Node q = new Node(p.value, p.row, p.col);
+            stackNode[top][i] = q;
+            p = p.next;
+        }
+
+        for (int i = 0; i < stackNode[top].length; i++) {
+            if (stackNode[top][i] == null) {
+                stackNode[top][i] = new Node(0, -1, -1); // Use a default value or consider a different approach
+            }
+        }
+        scoreUndo[top]=Integer.parseInt(score.getText());
+//        for (int i = 0; i <= top; i++) {
+//            for (int j = 0; j < stackNode[i].length; j++) {
+//                if (stackNode[i][j] != null) {
+//                    System.out.println(stackNode[i][j].value);
+//                    System.out.println(stackNode[i][j].row);
+//                    System.out.println(stackNode[i][j].col);
+//                }
+//            }
+//            System.out.println('\n');
+//            System.out.println('\n');
+//        }
+    }
+
+    @FXML
+    public void undo() {
+        if (top >= 0 && countUndo>0) {
+            // Save the current state to redo stack
+            topRedo++;
+            for (int i = 0; i < stackNode[top].length; i++) {
+                Node q = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
+                stackNodeRedo[topRedo][i] = q;
+                scoreRedo[topRedo] = scoreUndo[top];
+                stackNode[top][i].value = 0;
+                stackNode[top][i].row = -1;
+                stackNode[top][i].col = -1;
+            }
+            top--;
+            score.setText(Integer.toString(scoreUndo[top]));
+            // Restore the state from undo stack
+            first = null;
+            for (int i = 0; i < stackNode[top].length && stackNode[top][i].value != 0; i++) {
+                Node newNode = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
+                stackNode[top][i].value = 0;
+                stackNode[top][i].row = -1;
+                stackNode[top][i].col = -1;
+                if (first == null) {
+                    first = newNode;
+                } else {
+                    Node p = first;
+                    while (p.next != null) {
+                        p = p.next;
+                    }
+                    p.next = newNode;
+                }
+            }
+            top--;
+            countUndo--;
+            saveState();
+            setBoard();
+        }
+        else if(countUndo == 0){
+            showMessage("NO MORE UNDOS LEFT");
+        }
+    }
+
+
+    @FXML
+    public void redo() {
+        if (topRedo >= 0 && countRedo>0) {
+            score.setText(Integer.toString(scoreRedo[topRedo]));
+            // Restore the state from redo stack
+            first = null;
+            for (int i = 0; i < stackNodeRedo[topRedo].length && stackNodeRedo[topRedo][i].value != 0; i++) {
+                Node newNode = new Node(stackNodeRedo[topRedo][i].value, stackNodeRedo[topRedo][i].row, stackNodeRedo[topRedo][i].col);
+                stackNodeRedo[topRedo][i].value = 0;
+                stackNodeRedo[topRedo][i].row = -1;
+                stackNodeRedo[topRedo][i].col = -1;
+                if (first == null) {
+                    first = newNode;
+                } else {
+                    Node p = first;
+                    while (p.next != null) {
+                        p = p.next;
+                    }
+                    p.next = newNode;
+                }
+            }
+            topRedo--;
+            countRedo--;
+            saveState();
+            setBoard();
+        }
+        else if(countRedo == 0){
+            showMessage("NO MORE REDOS LEFT");
+        }
+    }
+
     public void addNewTale() {
         Random rand = new Random();
         int value = rand.nextInt(10) < 7 ? 2 : 4; // 70% chance of 2, 30% chance of 4
@@ -129,110 +262,6 @@ public class Board implements Initializable{
             }
         }
     }
-
-
-    //restarting the game
-    @FXML
-    public void restart() {
-        first = null;
-        countUndo = 5;
-        countRedo = 5;
-        top = -1;
-        topRedo = -1;
-        for (int i = 0; i < 7; i++) {
-            for (int j = 0; j < 16; j++) {
-                stackNode[i][j] = new Node(0, -1, -1);
-            }
-        }
-        for (int i = 0; i < 7; i++) {
-            for (int j = 0; j < 16; j++) {
-                stackNodeRedo[i][j] = new Node(0, -1, -1);
-            }
-        }
-        score.setText("0");
-        addNewTale();
-        addNewTale();
-        setBoard();
-        saveState();
-    }
-
-    //saving the boards state
-    public void saveState() {
-        Node p = first;
-        top++;
-        for (int i = 0; p != null; i++) {
-            Node q = new Node(p.value, p.row, p.col);
-            stackNode[top][i] = q;
-            p = p.next;
-        }
-
-        for (int i = 0; i < stackNode[top].length; i++) {
-            if (stackNode[top][i] == null) {
-                stackNode[top][i] = new Node(0, -1, -1);
-            }
-        }
-        scoreUndo[top]=Integer.parseInt(score.getText());
-    }
-
-    @FXML
-    public void undo() {
-        if (top > 0 && countUndo>0) {
-            // Save the current state to redo stack
-            topRedo++;
-            for (int i = 0; i < stackNode[top].length; i++) {
-                Node q = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
-                stackNodeRedo[topRedo][i] = q;
-                scoreRedo[topRedo] = scoreUndo[top];
-                stackNode[top][i].value = 0;
-                stackNode[top][i].row = -1;
-                stackNode[top][i].col = -1;
-            }
-            top--;
-            restoreState(stackNode, top,scoreUndo);
-            countUndo--;
-            saveState();
-            setBoard();
-        }
-        else if(countUndo == 0){
-            showMessage("NO MORE UNDOS LEFT");
-        }
-    }
-    public void restoreState (Node[][] stackNode, int top, int[] scoreUndo){
-        score.setText(Integer.toString(scoreUndo[top]));
-        // Restore the state from undo stack
-        first = null;
-        for (int i = 0; i < stackNode[top].length && stackNode[top][i].value != 0; i++) {
-            Node newNode = new Node(stackNode[top][i].value, stackNode[top][i].row, stackNode[top][i].col);
-            stackNode[top][i].value = 0;
-            stackNode[top][i].row = -1;
-            stackNode[top][i].col = -1;
-            if (first == null) {
-                first = newNode;
-            } else {
-                Node p = first;
-                while (p.next != null) {
-                    p = p.next;
-                }
-                p.next = newNode;
-            }
-        }
-        top--;
-    }
-
-
-    @FXML
-    public void redo() {
-        if (topRedo > 0 && countRedo>0) {
-            restoreState(stackNodeRedo, topRedo, scoreRedo);
-            countRedo--;
-            saveState();
-            setBoard();
-        }
-        else if(countRedo == 0){
-            showMessage("NO MORE REDOS LEFT");
-        }
-    }
-
 
     // has the player made a move in which the board the changes
     public boolean successfulMove() {
@@ -283,7 +312,15 @@ public class Board implements Initializable{
             }
 
             // Merge nodes
-            mergeRow(columnNodes);
+            for (int i = 1; i < 4; i++) {
+                if (columnNodes[i] != null) {
+                    if (columnNodes[i - 1] != null && columnNodes[i - 1].value == columnNodes[i].value) {
+                        columnNodes[i - 1].value *= 2;
+                        columnNodes[i] = null;
+                        score.setText(Integer.toString(Integer.parseInt(score.getText()) + columnNodes[i - 1].value));
+                    }
+                }
+            }
 
             // Shift nodes to fill empty spaces
             for (int i = 1; i < 4; i++) {
@@ -348,13 +385,41 @@ public class Board implements Initializable{
             }
 
             // Shift nodes to fill empty spaces
-            shiftNodesCol(columnNodes);
+            for (int i = 2; i >= 0; i--) {
+                if (columnNodes[i] != null) {
+                    int j = i;
+                    while (j < 3 && columnNodes[j + 1] == null) {
+                        columnNodes[j + 1] = columnNodes[j];
+                        columnNodes[j] = null;
+                        columnNodes[j + 1].row = j + 1;
+                        j++;
+                    }
+                }
+            }
 
             // Merge nodes
-            merge(columnNodes);
+            for (int i = 2; i >= 0; i--) {
+                if (columnNodes[i] != null) {
+                    if (columnNodes[i + 1] != null && columnNodes[i + 1].value == columnNodes[i].value) {
+                        columnNodes[i + 1].value *= 2;
+                        columnNodes[i] = null;
+                        score.setText(Integer.toString(Integer.parseInt(score.getText()) + columnNodes[i + 1].value));
+                    }
+                }
+            }
 
             // Shift nodes to fill empty spaces again after merging
-            shiftNodesCol(columnNodes);
+            for (int i = 2; i >= 0; i--) {
+                if (columnNodes[i] != null) {
+                    int j = i;
+                    while (j < 3 && columnNodes[j + 1] == null) {
+                        columnNodes[j + 1] = columnNodes[j];
+                        columnNodes[j] = null;
+                        columnNodes[j + 1].row = j + 1;
+                        j++;
+                    }
+                }
+            }
 
             // Update the linked list to reflect the changes in columnNodes
             Node dummy = new Node(0, -1, -1);
@@ -391,6 +456,94 @@ public class Board implements Initializable{
         }
     }
 
+
+    public void moveLeft() {
+        // Put each row inside an array
+        for (int row = 0; row < 4; row++) {
+            Node[] rowNodes = new Node[4];
+
+            // Extract nodes in the current row
+            Node p = first;
+            while (p != null) {
+                if (p.row == row) {
+                    rowNodes[p.col] = new Node(p.value, p.row, p.col);
+                }
+                p = p.next;
+            }
+
+            // Shift nodes to fill empty spaces
+            for (int i = 1; i < 4; i++) {
+                if (rowNodes[i] != null) {
+                    int j = i;
+                    while (j > 0 && rowNodes[j - 1] == null) {
+                        rowNodes[j - 1] = rowNodes[j];
+                        rowNodes[j] = null;
+                        rowNodes[j - 1].col = j - 1;
+                        j--;
+                    }
+                }
+            }
+
+            // Merge nodes
+            for (int i = 1; i < 4; i++) {
+                if (rowNodes[i] != null) {
+                    if (rowNodes[i - 1] != null && rowNodes[i - 1].value == rowNodes[i].value) {
+                        rowNodes[i - 1].value *= 2;
+                        rowNodes[i] = null;
+                        score.setText(Integer.toString(Integer.parseInt(score.getText()) + rowNodes[i - 1].value));
+                    }
+                }
+            }
+
+            // Shift nodes to fill empty spaces again after merging
+            for (int i = 1; i < 4; i++) {
+                if (rowNodes[i] != null) {
+                    int j = i;
+                    while (j > 0 && rowNodes[j - 1] == null) {
+                        rowNodes[j - 1] = rowNodes[j];
+                        rowNodes[j] = null;
+                        rowNodes[j - 1].col = j - 1;
+                        j--;
+                    }
+                }
+            }
+
+            // Update the linked list to reflect the changes in rowNodes
+            Node dummy = new Node(0, -1, -1);
+            dummy.next = first;
+            Node prev = dummy;
+            Node current = first;
+            int k = 0; // Start from the left
+            while (current != null) {
+                if (current.row == row) {
+                    if (k < rowNodes.length && rowNodes[k] == null) {
+                        prev.next = current.next;
+                    } else if (k < rowNodes.length) {
+                        current.value = rowNodes[k].value;
+                        current.row = rowNodes[k].row;
+                        current.col = rowNodes[k].col;
+                        prev = current;
+                    }
+                    k++;
+                } else {
+                    prev = current;
+                }
+                current = current.next;
+            }
+            first = dummy.next;
+        }
+        // Check if the move made any changes to the board
+        if (successfulMove()) {
+            addNewTale();
+            setBoard();
+            saveState();
+            hasWon();
+            isGameOver();
+
+        }
+    }
+
+
     public void moveRight() {
         // Put each row inside an array
         for (int row = 0; row < 4; row++) {
@@ -419,7 +572,15 @@ public class Board implements Initializable{
             }
 
             // Merge nodes
-            merge(rowNodes);
+            for (int i = 2; i >= 0; i--) {
+                if (rowNodes[i] != null) {
+                    if (rowNodes[i + 1] != null && rowNodes[i + 1].value == rowNodes[i].value) {
+                        rowNodes[i + 1].value *= 2;
+                        rowNodes[i] = null;
+                        score.setText(Integer.toString(Integer.parseInt(score.getText()) + rowNodes[i + 1].value));
+                    }
+                }
+            }
 
             // Shift nodes to fill empty spaces again after merging
             for (int i = 2; i >= 0; i--) {
@@ -469,119 +630,6 @@ public class Board implements Initializable{
         }
     }
 
-
-    public void moveLeft() {
-        // Put each row inside an array
-        for (int row = 0; row < 4; row++) {
-            Node[] rowNodes = new Node[4];
-
-            // Extract nodes in the current row
-            Node p = first;
-            while (p != null) {
-                if (p.row == row) {
-                    rowNodes[p.col] = new Node(p.value, p.row, p.col);
-                }
-                p = p.next;
-            }
-
-            // Shift nodes to fill empty spaces
-            shiftNodes(rowNodes);
-
-            // Merge nodes
-            mergeRow(rowNodes);
-
-            // Shift nodes to fill empty spaces again after merging
-            shiftNodes(rowNodes);
-
-            // Update the linked list to reflect the changes in rowNodes
-            Node dummy = new Node(0, -1, -1);
-            dummy.next = first;
-            Node prev = dummy;
-            Node current = first;
-            int k = 0; // Start from the left
-            while (current != null) {
-                if (current.row == row) {
-                    if (k < rowNodes.length && rowNodes[k] == null) {
-                        prev.next = current.next;
-                    } else if (k < rowNodes.length) {
-                        current.value = rowNodes[k].value;
-                        current.row = rowNodes[k].row;
-                        current.col = rowNodes[k].col;
-                        prev = current;
-                    }
-                    k++;
-                } else {
-                    prev = current;
-                }
-                current = current.next;
-            }
-            first = dummy.next;
-        }
-        // Check if the move made any changes to the board
-        if (successfulMove()) {
-            addNewTale();
-            setBoard();
-            saveState();
-            hasWon();
-            isGameOver();
-
-        }
-    }
-    private void shiftNodesCol(Node[] columnNodes) {
-        for (int i = 2; i >= 0; i--) {
-            if (columnNodes[i] != null) {
-                int j = i;
-                while (j < 3 && columnNodes[j + 1] == null) {
-                    columnNodes[j + 1] = columnNodes[j];
-                    columnNodes[j] = null;
-                    columnNodes[j + 1].row = j + 1;
-                    j++;
-                }
-            }
-        }
-    }
-
-
-    private void shiftNodes(Node[] rowNodes) {
-        for (int i = 1; i < 4; i++) {
-            if (rowNodes[i] != null) {
-                int j = i;
-                while (j > 0 && rowNodes[j - 1] == null) {
-                    rowNodes[j - 1] = rowNodes[j];
-                    rowNodes[j] = null;
-                    rowNodes[j - 1].col = j - 1;
-                    j--;
-                }
-            }
-        }
-    }
-
-    private void mergeRow(Node[] rowNodes) {
-        for (int i = 1; i < 4; i++) {
-            if (rowNodes[i] != null) {
-                if (rowNodes[i - 1] != null && rowNodes[i - 1].value == rowNodes[i].value) {
-                    rowNodes[i - 1].value *= 2;
-                    rowNodes[i] = null;
-                    score.setText(Integer.toString(Integer.parseInt(score.getText()) + rowNodes[i - 1].value));
-                }
-            }
-        }
-    }
-
-
-
-    private void merge(Node[] rowNodes) {
-        for (int i = 2; i >= 0; i--) {
-            if (rowNodes[i] != null) {
-                if (rowNodes[i + 1] != null && rowNodes[i + 1].value == rowNodes[i].value) {
-                    rowNodes[i + 1].value *= 2;
-                    rowNodes[i] = null;
-                    score.setText(Integer.toString(Integer.parseInt(score.getText()) + rowNodes[i + 1].value));
-                }
-            }
-        }
-    }
-
     public void hasWon() {
         if(Integer.parseInt(score.getText()) == 2048){
             showMessage("YOU HAVE WON!");
@@ -595,25 +643,8 @@ public class Board implements Initializable{
                 return;
             }
         }
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                if(i-1>=0)
-                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i-1][j].getText()))
-                        return;
-                if(i+1<=3)
-                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i+1][j].getText()))
-                        return;
-                if(j-1>=0)
-                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i][j-1].getText()))
-                        return;
-                if(j+1<=3)
-                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i][j+1].getText()))
-                        return;
-            }
-        }
         if(sw){
             showMessage("GAME OVER!");
         }
     }
 }
-

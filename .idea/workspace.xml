@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="da4a93c3-4f1c-463b-9b75-b849464983c9" name="Changes" comment="shortening the code">
+    <list default="true" id="da4a93c3-4f1c-463b-9b75-b849464983c9" name="Changes" comment="fixing restart button">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/_2048/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/_2048/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/_2048/board.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/example/_2048/board.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +99,7 @@
       <workItem from="1733386967345" duration="29036000" />
       <workItem from="1733467913758" duration="67000" />
       <workItem from="1733512951249" duration="1617000" />
-      <workItem from="1733577558620" duration="2787000" />
+      <workItem from="1733577558620" duration="10209000" />
     </task>
     <task id="LOCAL-00001" summary="board design">
       <created>1733248436132</created>
@@ -191,7 +192,14 @@
       <option name="project" value="LOCAL" />
       <updated>1733579226823</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="fixing restart button">
+      <created>1733580591783</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1733580591783</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -211,6 +219,7 @@
     <MESSAGE value="undo and redo" />
     <MESSAGE value="score in undo redo" />
     <MESSAGE value="shortening the code" />
-    <option name="LAST_COMMIT_MESSAGE" value="shortening the code" />
+    <MESSAGE value="fixing restart button" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixing restart button" />
   </component>
 </project>
