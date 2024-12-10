@@ -19,10 +19,10 @@ import javafx.scene.text.Font;
 public class Board implements Initializable{
     private Node first ;
     private Label[][] labels = new Label[4][4];
-    private static Node[][] stackNode = new Node[100][16];
-    private static Node[][] stackNodeRedo = new Node[100][16];
-    private int[] scoreUndo = new int[100];
-    private int[] scoreRedo = new int[100];
+    private static Node[][] stackNode = new Node[1000][16];
+    private static Node[][] stackNodeRedo = new Node[1000][16];
+    private int[] scoreUndo = new int[1000];
+    private int[] scoreRedo = new int[1000];
     private static int countUndo = 5;
     private static int countRedo = 5;
     private static int top = -1;
@@ -56,7 +56,8 @@ public class Board implements Initializable{
                     case LEFT -> moveLeft();
                     case RIGHT -> moveRight();
                 }
-                event.consume();;
+                isGameOver();
+                event.consume();
                 board.requestFocus();
             });
             board.setFocusTraversable(true);
@@ -69,9 +70,8 @@ public class Board implements Initializable{
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 labels[i][j] = new Label("");
-                //chera kar nemikone
-                labels[i][j].setFont(new Font("AppleGothic", 15));
-                labels[i][j].setTextFill(Color.rgb(124,44,7));
+                labels[i][j].setFont(new Font("AppleGothic", 25));
+                labels[i][j].setTextFill(Color.rgb(141,51,1));
                 labels[i][j].alignmentProperty().set(Pos.CENTER);
                 board.add(labels[i][j], j,i);
             }
@@ -109,6 +109,7 @@ public class Board implements Initializable{
         addNewTale();
         setBoard();
         saveState();
+        board.requestFocus();
     }
 
     //saving the boards state
@@ -123,7 +124,7 @@ public class Board implements Initializable{
 
         for (int i = 0; i < stackNode[top].length; i++) {
             if (stackNode[top][i] == null) {
-                stackNode[top][i] = new Node(0, -1, -1); // Use a default value or consider a different approach
+                stackNode[top][i] = new Node(0, -1, -1);
             }
         }
         scoreUndo[top]=Integer.parseInt(score.getText());
@@ -180,6 +181,7 @@ public class Board implements Initializable{
         else if(countUndo == 0){
             showMessage("NO MORE UNDOS LEFT");
         }
+        board.requestFocus();
     }
 
 
@@ -212,6 +214,7 @@ public class Board implements Initializable{
         else if(countRedo == 0){
             showMessage("NO MORE REDOS LEFT");
         }
+        board.requestFocus();
     }
 
     public void addNewTale() {
@@ -365,7 +368,6 @@ public class Board implements Initializable{
             setBoard();
             saveState();
             hasWon();
-            isGameOver();
 
         }
     }
@@ -451,7 +453,6 @@ public class Board implements Initializable{
             setBoard();
             saveState();
             hasWon();
-            isGameOver();
 
         }
     }
@@ -538,7 +539,6 @@ public class Board implements Initializable{
             setBoard();
             saveState();
             hasWon();
-            isGameOver();
 
         }
     }
@@ -625,7 +625,6 @@ public class Board implements Initializable{
             setBoard();
             saveState();
             hasWon();
-            isGameOver();
 
         }
     }
@@ -637,30 +636,39 @@ public class Board implements Initializable{
     }
 
     public void isGameOver() {
-        boolean sw = true;
+        // Check if any tile is empty
         for (int i = 0; i < 16; i++) {
-            if(stackNode[top][i].value == 0) {
+            if (stackNode[top][i].value == 0) {
                 return;
             }
         }
+
+        // Check if any adjacent tiles can be merged
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                if(i-1>=0)
-                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i-1][j].getText()))
-                        return;
-                if(i+1<=3)
-                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i+1][j].getText()))
-                        return;
-                if(j-1>=0)
-                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i][j-1].getText()))
-                        return;
-                if(j+1<=3)
-                    if(Integer.parseInt(labels[i][j].getText()) == Integer.parseInt(labels[i][j+1].getText()))
-                        return;
+                int currentValue = Integer.parseInt(labels[i][j].getText());
+                if (currentValue == 0 || labels[i][j].getText() == "") continue;
+
+                if (i - 1 >= 0 && currentValue == Integer.parseInt(labels[i - 1][j].getText())) {
+                    return;
+                }
+
+                if (i + 1 <= 3 && currentValue == Integer.parseInt(labels[i + 1][j].getText())) {
+                    return;
+                }
+
+                if (j - 1 >= 0 && currentValue == Integer.parseInt(labels[i][j - 1].getText())) {
+                    return;
+                }
+
+                if (j + 1 <= 3 && currentValue == Integer.parseInt(labels[i][j + 1].getText())) {
+                    return;
+                }
             }
         }
-        if(sw){
-            showMessage("GAME OVER!");
-        }
+
+        // If no empty tiles and no merges possible, game is over
+        showMessage("GAME OVER!");
     }
+
 }

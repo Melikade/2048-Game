@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="da4a93c3-4f1c-463b-9b75-b849464983c9" name="Changes" comment="final">
+    <list default="true" id="da4a93c3-4f1c-463b-9b75-b849464983c9" name="Changes" comment="small fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/_2048/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/_2048/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/_2048/board.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/example/_2048/board.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +100,9 @@
       <workItem from="1733467913758" duration="67000" />
       <workItem from="1733512951249" duration="1617000" />
       <workItem from="1733577558620" duration="10769000" />
-      <workItem from="1733594748013" duration="565000" />
+      <workItem from="1733594748013" duration="2189000" />
+      <workItem from="1733600427680" duration="811000" />
+      <workItem from="1733818360221" duration="1525000" />
     </task>
     <task id="LOCAL-00001" summary="board design">
       <created>1733248436132</created>
@@ -205,7 +209,14 @@
       <option name="project" value="LOCAL" />
       <updated>1733588656004</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="small fixes">
+      <created>1733595576287</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1733595576287</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -227,6 +238,7 @@
     <MESSAGE value="shortening the code" />
     <MESSAGE value="fixing restart button" />
     <MESSAGE value="final" />
-    <option name="LAST_COMMIT_MESSAGE" value="final" />
+    <MESSAGE value="small fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="small fixes" />
   </component>
 </project>

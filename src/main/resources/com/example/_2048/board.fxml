@@ -29,7 +29,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
       </GridPane>
-      <Label fx:id="score" layoutX="331.0" layoutY="49.0" prefHeight="44.0" prefWidth="87.0" style="-fx-background-radius: 10;" text="128" textAlignment="CENTER">
+      <Label fx:id="score" layoutX="343.0" layoutY="49.0" prefHeight="57.0" prefWidth="117.0" style="-fx-background-radius: 10;" text="128" textAlignment="CENTER">
          <font>
             <Font name="AppleGothic Regular" size="39.0" />
          </font>
@@ -78,7 +78,7 @@
                </input>
             </DropShadow>
          </effect></Button>
-      <Label layoutX="220.0" layoutY="62.0" text="SCORE =" textFill="#7c2c07">
+      <Label layoutX="230.0" layoutY="62.0" text="SCORE =" textFill="#7c2c07">
          <font>
             <Font name="AppleGothic Regular" size="25.0" />
          </font>
